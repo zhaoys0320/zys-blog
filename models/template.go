@@ -17,7 +17,7 @@ type HtmlTemplate struct {
 	Detail     TemplateBlog
 	Login      TemplateBlog
 	PigeOnhole TemplateBlog
-	Writting   TemplateBlog
+	Writing    TemplateBlog
 }
 
 func (t *TemplateBlog) WriteData(w http.ResponseWriter, data interface{}) {
@@ -52,7 +52,7 @@ func InitTemplate() (HtmlTemplate, error) {
 	templatehtml.Detail = tempBlogs[3]
 	templatehtml.Login = tempBlogs[4]
 	templatehtml.PigeOnhole = tempBlogs[5]
-	templatehtml.Writting = tempBlogs[6]
+	templatehtml.Writing = tempBlogs[6]
 	return templatehtml, nil
 }
 

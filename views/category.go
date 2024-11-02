@@ -1,6 +1,8 @@
 package views
 
 import (
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -19,6 +21,39 @@ type HTMLApi struct {
 var API = &Api{}
 
 type Api struct {
+}
+
+func PostDetail(w http.ResponseWriter, r *http.Request) {
+	//if err := r.ParseForm(); err != nil{
+	//	common.Error(w,errors.New("参数解析错误"))
+	//	log.Println(err)
+	//	return
+	//}
+	path := r.URL.Path
+	id := strings.TrimPrefix(path, "/p/")
+	id = strings.TrimSuffix(id, ".html")
+	pid, _ := strconv.Atoi(id)
+	post, err := dao.GetPostById(pid)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	var pm models.PostMore
+	pm.UserName = dao.GetUserNameById(post.UserId)
+	pm.Pid = post.Pid
+	pm.ViewCount = post.ViewCount
+	pm.CategoryId = post.CategoryId
+	pm.CategoryName = dao.GetCategoryNameById(post.CategoryId)
+	pm.Content = template.HTML(post.Content)
+	pm.Title = post.Title
+	pm.Slug = post.Slug
+	pm.CreateAt = common.Format(post.CreateAt)
+	common.Template.Detail.WriteData(w,
+		models.PostRes{
+			config.Cfg.Viewer,
+			config.Cfg.System,
+			pm,
+		})
 }
 
 func (*HTMLApi) Category(w http.ResponseWriter, r *http.Request) {
