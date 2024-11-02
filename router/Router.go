@@ -12,5 +12,6 @@ func Router() {
 	http.HandleFunc("/c/", views.HTML.Category)
 	http.HandleFunc("/login", views.HTML.Login)
 	http.HandleFunc("/api/v1/login", api.HTMLApI.Login)
+	http.HandleFunc("/p/", views.PostDetail)
 	http.Handle("/resource/", http.StripPrefix("/resource/", http.FileServer(http.Dir("public/resource/"))))
 }
