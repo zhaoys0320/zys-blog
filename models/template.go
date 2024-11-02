@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -39,10 +38,14 @@ func CreateAt(t time.Time) string {
 	return t.Format("2006-01-02 15:04:05")
 }
 
-func InitTemplate() HtmlTemplate {
+func InitTemplate() (HtmlTemplate, error) {
 	templatehtml := HtmlTemplate{}
-	tempBlogs := ReadTemplate(config.Cfg.System.CurrentDir+"/template/",
+	tempBlogs, err := ReadTemplate(
+		config.Cfg.System.CurrentDir+"/template/",
 		[]string{"index", "category", "custom", "detail", "login", "pigeOnhole", "writing"})
+	if err != nil {
+		return templatehtml, err
+	}
 	templatehtml.Index = tempBlogs[0]
 	templatehtml.Category = tempBlogs[1]
 	templatehtml.Custom = tempBlogs[2]
@@ -50,15 +53,15 @@ func InitTemplate() HtmlTemplate {
 	templatehtml.Login = tempBlogs[4]
 	templatehtml.PigeOnhole = tempBlogs[5]
 	templatehtml.Writting = tempBlogs[6]
-	return templatehtml
+	return templatehtml, nil
 }
 
-func ReadTemplate(templateDir string, templateName []string) []TemplateBlog {
+func ReadTemplate(templateDir string, templateName []string) ([]TemplateBlog, error) {
 	templateblogs := []TemplateBlog{}
 
 	for _, name := range templateName {
 		tempName := templateDir + name + ".html"
-		t := template.New(tempName)
+		t := template.New(name + ".html")
 		home := templateDir + "home.html"
 		header := templateDir + "Layout/header.html"
 		footer := templateDir + "layout/footer.html"
@@ -68,9 +71,9 @@ func ReadTemplate(templateDir string, templateName []string) []TemplateBlog {
 		t.Funcs(template.FuncMap{"isODD": IsODD, "getNextName": GetNextName, "date": Date, "dateDay": CreateAt})
 		t, err := t.ParseFiles(tempName, home, header, footer, personal, post, pagination)
 		if err != nil {
-			fmt.Println(err)
+			return templateblogs, err
 		}
 		templateblogs = append(templateblogs, TemplateBlog{t})
 	}
-	return templateblogs
+	return templateblogs, nil
 }

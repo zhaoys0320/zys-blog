@@ -7,16 +7,13 @@ import (
 	"zys-boke-master/router"
 )
 
-type Data struct {
-	Title string `json:"title"`
-	Des   string `json:"description"`
+func init() {
+	common.LoadTemplate()
 }
-
 func main() {
 	server := http.Server{
 		Addr: "localhost:8080",
 	}
-	common.LoadTemplate()
 	router.Router()
 	if err := server.ListenAndServe(); err != nil {
 		log.Println(err)
